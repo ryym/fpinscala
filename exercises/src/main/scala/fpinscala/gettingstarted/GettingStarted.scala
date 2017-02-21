@@ -45,10 +45,10 @@ object MyModule {
 
   def fib(count: Int): Int = {
     @annotation.tailrec
-    def go(n1: Int, n2: Int, i: Int): Int =
-      if (i >= count) n1
-      else go(n2, n1 + n2, i + 1)
-    go(0, 1, 0)
+    def go(i: Int, prev: Int, cur: Int): Int =
+      if (i == 0) prev
+      else go(i - 1, cur, prev + cur)
+    go(count, 0, 1)
   }
 
   // This definition and `formatAbs` are very similar..
