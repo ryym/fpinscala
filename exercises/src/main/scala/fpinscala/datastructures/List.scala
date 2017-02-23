@@ -60,21 +60,19 @@ object List { // `List` companion object. Contains functions for creating and wo
     case Cons(_, t) => Cons(h, t)
   }
 
-  def drop[A](l: List[A], n: Int): List[A] = l match {
-    case Nil => Nil
-    case Cons(_, t) =>
-      if (n == 1) t
-      else drop(t, n - 1)
-  }
+  def drop[A](l: List[A], n: Int): List[A] =
+    if (n <= 0) l
+    else l match {
+      case Nil => Nil
+      case Cons(_, t) => drop(t, n - 1)
+    }
   def dropUsingTail[A](l: List[A], n: Int): List[A] =
     if (n == 0 || l == Nil) l
     else drop(tail(l), n - 1)
 
   def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
-    case Nil => Nil
-    case Cons(h, t) =>
-      if (f(h)) dropWhile(t, f)
-      else Cons(h, t)
+    case Cons(h, t) if f(h) => dropWhile(t, f)
+    case _ => l
   }
 
   def init[A](l: List[A]): List[A] = ???
