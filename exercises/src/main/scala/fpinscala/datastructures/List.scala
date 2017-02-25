@@ -37,6 +37,19 @@ object List { // `List` companion object. Contains functions for creating and wo
       case Cons(h,t) => Cons(h, append(t, a2))
     }
 
+  // NOTE:
+  // Scala can't infer argument types from previous arguments,
+  // but it can do from previous argument groups. So we can omit type annotations
+  // using a curried function.
+  // e.g.) map(List(1,2,3))(a => a + 1)  // 'a' doesn't have a type annotation.
+
+  // The flow of foldRight:
+  //   foldRight(Cons(1, Cons(2, Cons(3, Nil))), 0)((x, y) => x + y)
+  //   1 + foldRight(Cons(2, Cons(3, Nil)), 0)((x, y) => x + y)
+  //   1 + (2 + foldRight(Cons(3, Nil), 0))((x, y) => x + y)
+  //   1 + (2 + (3 + foldRight(Nil, 0)))((x, y) => x + y)
+  //   1 + (2 + (3 + (0)))
+  //   6
   def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B): B = // Utility functions
     as match {
       case Nil => z
@@ -49,6 +62,15 @@ object List { // `List` companion object. Contains functions for creating and wo
   def product2(ns: List[Double]) =
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
+  // List is values folded by Cons:
+  //   foldRight(List(1, 2, 3), Nil)(Cons(_, _))
+  //   foldRight(Cons(1, Cons(2, Cons(3, Nil))), Nil)(Cons(_, _))
+  //   Cons(1, foldRight(Cons(2, Cons(3, Nil)), Nil))(Cons(_, _))
+  //   Cons(1, Cons(2, foldRight(Cons(3, Nil), Nil)))(Cons(_, _))
+  //   Cons(1, Cons(2, Cons(3, foldRight(Nil, Nil))))(Cons(_, _))
+  //   Cons(1, Cons(2, Cons(3, Nil)))
+  def foldList[A](l: List[A]): List[A] =
+    foldRight(l, Nil:List[A])(Cons(_, _))
 
   def tail[A](l: List[A]): List[A] = l match {
     case Nil => Nil
@@ -75,11 +97,35 @@ object List { // `List` companion object. Contains functions for creating and wo
     case _ => l
   }
 
-  def init[A](l: List[A]): List[A] = ???
+  def init[A](l: List[A]): List[A] = l match {
+    case Nil => Nil
+    case Cons(_, Nil) => Nil
+    case Cons(h, t) => Cons(h, init(t))
+  }
 
-  def length[A](l: List[A]): Int = ???
+  def length[A](l: List[A]): Int =
+    foldRight(l, 0)((_, i) => i + 1)
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = ???
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = {
+    @annotation.tailrec
+    def go(l: List[A], z: B): B = l match {
+      case Nil => z
+      case Cons(h, t) => go(t, f(z, h))
+    }
+    return go(l, z)
+  }
+
+  def sumL(l: List[Int]): Int =
+    foldLeft(l, 0)(_ + _)
+
+  def productL(l: List[Double]): Double =
+    foldLeft(l, 1.0)(_ * _)
+
+  def lengthL[A](l: List[A]): Int =
+    foldLeft(l, 0)((i, _) => i + 1)
+
+  def reverse[A](l: List[A]): List[A] =
+    foldLeft(l, Nil:List[A])((l, x) => Cons(x, l))
 
   def map[A,B](l: List[A])(f: A => B): List[B] = ???
 }
