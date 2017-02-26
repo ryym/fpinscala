@@ -64,4 +64,19 @@ class ListTest extends FunSuite with Matchers {
     List.reverse(List(0, 1, 2, 3)) should equal (List(3, 2, 1, 0))
     List.reverse(Nil) should equal (Nil)
   }
+
+  test("foldRightL is a foldRight implemented by foldLeft") {
+    val chars = List.foldRightL(List('a', 'b', 'c'), "")((c, cs) => cs + c)
+    chars should equal ("cba")
+  }
+
+  test("append2 appends a list to another one") {
+    val appended = List.append(List(1, 2, 3), List(4, 5, 6))
+    appended should equal (List(1, 2, 3, 4, 5, 6))
+  }
+
+  test("concat concatinates a list of lists") {
+    val lists = List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9))
+    List.concat(lists) should equal (List(1, 2, 3, 4, 5, 6, 7, 8, 9))
+  }
 }

@@ -127,5 +127,21 @@ object List { // `List` companion object. Contains functions for creating and wo
   def reverse[A](l: List[A]): List[A] =
     foldLeft(l, Nil:List[A])((l, x) => Cons(x, l))
 
+  def foldRightL[A,B](l: List[A], z: B)(f: (A, B) => B): B = {
+    // Wrap each operation as a function to delay each evaluation.
+    foldLeft(l, (b:B) => b)((b2b, a) => b => b2b(f(a, b)))(z)
+  }
+  // def delay0(b) = b => b
+  // def delay1(b) = delay0(Cons(1, b))
+  // def delay2(b) = delay1(Cons(2, b))
+  // def delay3(b) = delay2(Cons(3, b))
+  // delay3(Nil)
+
+  def append2[A](l1: List[A], l2: List[A]): List[A] =
+    foldRight(l2, l1)(Cons(_, _))
+
+  def concat[A](l: List[List[A]]): List[A] =
+    foldRight(l, Nil:List[A])(append(_, _))
+
   def map[A,B](l: List[A])(f: A => B): List[B] = ???
 }
