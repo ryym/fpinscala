@@ -112,4 +112,9 @@ class ListTest extends FunSuite with Matchers {
     List.addPairwise(List(1, 2, 3), List(1, 2, 3)) should equal (List(2, 4, 6))
     List.addPairwise(List(1), List(1, 2, 3)) should equal (List(2))
   }
+
+  test("zipWith zips two lists") {
+    List.zipWith(List(1, 2, 3), List(1 ,2, 3))(_ + _) should equal (List(2, 4, 6))
+    List.zipWith(List(true, false), List(false, true))(_ || _) should equal (List(true, true))
+  }
 }
