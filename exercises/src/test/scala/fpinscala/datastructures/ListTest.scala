@@ -97,4 +97,14 @@ class ListTest extends FunSuite with Matchers {
   test("filter filters a list by a given predicate") {
     List.filter(List(0, 1, 2, 3, 4))(_ % 2 == 0) should equal (List(0, 2, 4))
   }
+
+  test("flatMap maps and flattens a list") {
+    List.flatMap(List(1, 2, 3))(i => List(i, i)) should equal (List(1, 1, 2, 2, 3, 3))
+  }
+
+  test("filterViaFlatMap is a filter implemented based on flatMap") {
+    def isEven(n: Int) = n % 2 == 0
+    val nums = List(0, 1, 2, 3, 4)
+    List.filterViaFlatMap(nums)(isEven) should equal (List.filter(nums)(isEven))
+  }
 }
