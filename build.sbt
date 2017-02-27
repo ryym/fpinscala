@@ -10,7 +10,10 @@ lazy val root = (project in file("."))
   )
 
 lazy val exercises = (project in file("exercises"))
-  .settings(commonSettings)
+  .settings(
+    commonSettings,
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  )
   .settings(
     name := "exercises"
   )
