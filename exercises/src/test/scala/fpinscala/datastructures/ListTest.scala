@@ -79,4 +79,22 @@ class ListTest extends FunSuite with Matchers {
     val lists = List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9))
     List.concat(lists) should equal (List(1, 2, 3, 4, 5, 6, 7, 8, 9))
   }
+
+  test("addOneEach adds one to each element of a digit list") {
+    List.addOneEach(List(0, 1, 2, 3)) should equal (List(1, 2, 3, 4))
+  }
+
+  test("doublesToStrings converts each doulbe to string") {
+    val doubles = List(0.0, 1.4, 5.2)
+    List.doublesToStrings(doubles) should equal (List("0.0", "1.4", "5.2"))
+  }
+
+  test("map maps each element of a list") {
+    List.map(List(0, 1, 2))(n => n + 1) should equal (List(1, 2, 3))
+    List.map(List(0.0, 1.4))(d => d.toString) should equal (List("0.0", "1.4"))
+  }
+
+  test("filter filters a list by a given predicate") {
+    List.filter(List(0, 1, 2, 3, 4))(_ % 2 == 0) should equal (List(0, 2, 4))
+  }
 }

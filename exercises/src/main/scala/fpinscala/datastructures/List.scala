@@ -143,5 +143,15 @@ object List { // `List` companion object. Contains functions for creating and wo
   def concat[A](l: List[List[A]]): List[A] =
     foldRight(l, Nil:List[A])(append)
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = ???
+  def addOneEach(l: List[Int]): List[Int] =
+    foldRight(l, Nil:List[Int])((n, ns) => Cons(n + 1, ns))
+
+  def doublesToStrings(l: List[Double]): List[String] =
+    foldRight(l, Nil:List[String])((d, ss) => Cons(d.toString, ss))
+
+  def map[A,B](l: List[A])(f: A => B): List[B] =
+    foldRight(l, Nil:List[B])((a, bs) => Cons(f(a), bs))
+
+  def filter[A](l: List[A])(f: A => Boolean): List[A] =
+    foldRight(l, Nil:List[A])((a, as) => if (f(a)) Cons(a, as) else as)
 }
