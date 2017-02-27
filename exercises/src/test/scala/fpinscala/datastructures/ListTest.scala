@@ -107,4 +107,9 @@ class ListTest extends FunSuite with Matchers {
     val nums = List(0, 1, 2, 3, 4)
     List.filterViaFlatMap(nums)(isEven) should equal (List.filter(nums)(isEven))
   }
+
+  test("addPairwise adds each digit of two lists") {
+    List.addPairwise(List(1, 2, 3), List(1, 2, 3)) should equal (List(2, 4, 6))
+    List.addPairwise(List(1), List(1, 2, 3)) should equal (List(2))
+  }
 }
