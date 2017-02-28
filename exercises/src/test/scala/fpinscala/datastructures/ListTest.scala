@@ -117,4 +117,14 @@ class ListTest extends FunSuite with Matchers {
     List.zipWith(List(1, 2, 3), List(1 ,2, 3))(_ + _) should equal (List(2, 4, 6))
     List.zipWith(List(true, false), List(false, true))(_ || _) should equal (List(true, true))
   }
+
+  test("hasSubsequence determines a list has sub sequence or not") {
+    val sup = List(1, 2, 3, 4)
+    List.hasSubsequence(sup, List(1, 2)) should equal (true)
+    List.hasSubsequence(sup, List(2, 3, 4)) should equal (true)
+    List.hasSubsequence(sup, List(1)) should equal (true)
+    List.hasSubsequence(sup, Nil) should equal (true)
+    List.hasSubsequence(sup, List(2, 1)) should equal (false)
+    List.hasSubsequence(sup, List(1, 2, 3, 4, 5)) should equal (false)
+  }
 }

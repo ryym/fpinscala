@@ -171,4 +171,27 @@ object List { // `List` companion object. Contains functions for creating and wo
     case (_, Nil) => Nil
     case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
   }
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    if (sub == Nil)
+      true
+    else {
+      @annotation.tailrec
+      def go(sup: List[A], sub: List[A]): Boolean = {
+        if (length(sup) < length(sub))
+          false
+        else {
+          var l = sup
+          while (l != Nil) {
+            if (l == sub) {
+              return true
+            }
+            l = tail(l)
+          }
+          go(init(sup), sub)
+        }
+      }
+      go(sup, sub)
+    }
+  }
 }
