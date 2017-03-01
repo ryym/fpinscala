@@ -34,7 +34,7 @@ class TreeTest extends FunSuite with Matchers {
     depth(tree) should equal (5)
   }
 
-  // XXX: In Scala, we can't an anonymous function with generics..
+  // XXX: In Scala, we can't define an anonymous function with generics..
   // testMap(map: [A, B](t: Tree[A]) => (A => B) => Tree[B])
   type TestTreeMapper = Tree[Int] => (Int => String) => Tree[String]
   def testMap(map: TestTreeMapper): Unit = {
