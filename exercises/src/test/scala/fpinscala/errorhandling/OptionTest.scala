@@ -2,6 +2,10 @@ import org.scalatest._
 import fpinscala.errorhandling.{Option, Some, None}
 
 class OptionTest extends FunSuite with Matchers {
+  def Try[A](a : => A): Option[A] =
+    try Some(a)
+    catch { case e: Exception => None }
+
   test("map maps its value") {
     Some(3).map(_ * 2) should equal (Some(6))
     (None: Option[Int]).map(_ * 2) should equal (None)
@@ -49,5 +53,10 @@ class OptionTest extends FunSuite with Matchers {
       List(Some(0), None, Some(2))
     ) should equal (None)
     Option.sequence(Nil) should equal (Some(Nil))
+  }
+
+  test("traverse maps each value and aggregates them as optional list") {
+    Option.traverse(List("1", "22", "-4"))(s => Try(s.toInt)) should equal (Some(List(1, 22, -4)))
+    Option.traverse(List("1", "a", "-4"))(s => Try(s.toInt)) should equal (None)
   }
 }
