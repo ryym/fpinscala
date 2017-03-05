@@ -59,6 +59,13 @@ object Option {
   def map2[A, B, C](oa: Option[A], ob: Option[B])(f: (A, B) => C): Option[C] =
     oa.flatMap(a => ob.map(b => f(a, b)))
 
+  // We can use a comprehension which is a syntax sugar of `flatMap` and `map`.
+  def map2UsingComprehension[A, B, C](oa: Option[A], ob: Option[B])(f: (A, B) => C): Option[C] =
+    for {
+      a <- oa
+      b <- ob
+    } yield f(a, b)
+
   def sequence[A](as: List[Option[A]]): Option[List[A]] =
     as.foldRight(Some(Nil): Option[List[A]])((o, ol) => map2(o, ol)(_ :: _))
 
