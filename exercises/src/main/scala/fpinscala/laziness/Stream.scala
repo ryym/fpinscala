@@ -2,9 +2,23 @@ package fpinscala.laziness
 
 import Stream._
 trait Stream[+A] {
-  def toList(): List[A] = this match {
-    case Empty => Nil
-    case Cons(h, t) => h() :: t().toList()
+
+  // Not stack safe.
+  // def toList(): List[A] = this match {
+  //   case Empty => Nil
+  //   case Cons(h, t) => h() :: t().toList()
+  // }
+
+  def toList: List[A] = {
+    val buf = new collection.mutable.ListBuffer[A]
+    @annotation.tailrec
+    def go(s: Stream[A]): List[A] = s match {
+      case Cons(h, t) =>
+        buf += h()
+        go(t())
+      case _ => buf.toList
+    }
+    go(this)
   }
 
   def foldRight[B](z: => B)(f: (A, => B) => B): B = // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name and may choose not to evaluate it.

@@ -11,8 +11,7 @@ class StreamTest extends FunSuite with Matchers {
     val st = c(incl, c(incl, c(incl, emp)))
     i should equal (0)
 
-    val list = st.toList()
-    list should equal (List(1, 1, 1))
+    st.toList should equal (List(1, 1, 1))
     i should equal (3)
   }
 }
