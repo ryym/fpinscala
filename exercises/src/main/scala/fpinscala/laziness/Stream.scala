@@ -35,9 +35,20 @@ trait Stream[+A] {
     case Empty => None
     case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
   }
-  def take(n: Int): Stream[A] = ???
 
-  def drop(n: Int): Stream[A] = ???
+  def take(n: Int): Stream[A] = this match {
+    case Cons(h, t) =>
+      if (n == 0) Empty
+      else Cons(h, () => t().take(n - 1))
+    case Empty => this
+  }
+
+  def drop(n: Int): Stream[A] = this match {
+    case Empty => this
+    case Cons(_, t) =>
+      if (n == 0) this
+      else t().drop(n - 1)
+  }
 
   def takeWhile(p: A => Boolean): Stream[A] = ???
 
