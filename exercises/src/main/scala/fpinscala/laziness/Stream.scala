@@ -29,6 +29,7 @@ trait Stream[+A] {
 
   def exists(p: A => Boolean): Boolean = 
     foldRight(false)((a, b) => p(a) || b) // Here `b` is the unevaluated recursive step that folds the tail of the stream. If `p(a)` returns `true`, `b` will never be evaluated and the computation terminates early.
+    // Note that this is not stack safe if the predicate match no elements.
 
   @annotation.tailrec
   final def find(f: A => Boolean): Option[A] = this match {
@@ -47,9 +48,11 @@ trait Stream[+A] {
     case _ => this
   }
 
-  def takeWhile(p: A => Boolean): Stream[A] = ???
+  def takeWhile(p: A => Boolean): Stream[A] =
+    foldRight(empty[A])((a, b) => if (p(a)) cons(a, b) else empty)
 
-  def forAll(p: A => Boolean): Boolean = ???
+  def forAll(p: A => Boolean): Boolean =
+    foldRight(true)((a, b) => p(a) && b)
 
   def headOption: Option[A] = ???
 
