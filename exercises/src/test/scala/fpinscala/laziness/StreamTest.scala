@@ -51,4 +51,35 @@ class StreamTest extends FunSuite with Matchers {
     i should equal (3)
     st.takeWhile(_ >= 0).toList should equal (List(0, 2, 3, 4))
   }
+
+  test("map maps to another stream") {
+    val st = c(0, c(1, c(2, emp)))
+    val st2 = st.map(_.toString)
+    st2.toList should equal (List("0", "1", "2"))
+  }
+
+  test("filter filters some elements") {
+    val st = c(1, c(-1, c(2, emp)))
+    val st2 = st.filter(_ < 0)
+    st2.toList should equal (List(-1))
+  }
+
+  test("append appends two streams lazily") {
+    var i = 0
+    def incl(n: Int)(): Int = { i += 1; n }
+    val st1 = c(incl(0), c(incl(2), emp))
+    val st2 = c(incl(1), c(incl(3), emp))
+    val st3 = st1 append st2
+
+    // Only the first element is evaluated since Stream is non-strict.
+    i should equal (1)
+    st3.toList should equal (List(0, 2, 1, 3))
+  }
+
+  test("flatMap maps streams to another stream") {
+    val st = c(0, c(1, c(2, emp)))
+    val double = (n: Int) => c(n, c(n, emp))
+
+    st.flatMap(double).toList should equal (List(0, 0, 1, 1, 2, 2))
+  }
 }
