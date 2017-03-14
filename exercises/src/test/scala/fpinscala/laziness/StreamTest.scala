@@ -82,4 +82,20 @@ class StreamTest extends FunSuite with Matchers {
 
     st.flatMap(double).toList should equal (List(0, 0, 1, 1, 2, 2))
   }
+
+  test("constant creates infinite stream by given value") {
+    val st = Stream.constant(true)
+    st.take(4).toList should equal (List(true, true, true, true))
+    st.headOption should equal (Some(true))
+  }
+
+  test("from creates incremental number list") {
+    Stream.from(3).take(3).toList should equal (List(3, 4, 5))
+    Stream.from(-20).take(4).toList should equal (List(-20, -19, -18, -17))
+  }
+
+  test("fibs creates infinite fibonacchi list") {
+    Stream.fibs().take(7).toList should equal (List(0, 1, 1, 2, 3, 5, 8))
+    Stream.fibs().drop(2).take(2).toList should equal (List(1, 2))
+  }
 }
