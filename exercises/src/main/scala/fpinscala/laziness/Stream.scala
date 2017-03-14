@@ -133,7 +133,5 @@ object Stream {
     unfold(n)(i => Some(i, i + 1))
 
   def fibsViaUnfold: Stream[Int] =
-    unfold((0, 1))(s => s match {
-      case (prev, cur) => Some(prev, (cur, prev + cur))
-    })
+    unfold((0, 1)) { case (prev, cur) => Some(prev, (cur, prev + cur)) }
 }
