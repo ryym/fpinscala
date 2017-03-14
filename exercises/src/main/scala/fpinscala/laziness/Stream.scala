@@ -1,6 +1,11 @@
 package fpinscala.laziness
 
 import Stream._
+
+// Using Stream, we can combine methods like `map` and `filter`
+// without creating intermediate object (such as `list.map(_ + 1).filter(_ < 0)`)
+// because the elements are evaluated only when it is really needed (non-strictness).
+
 trait Stream[+A] {
 
   // Not stack safe.
@@ -65,6 +70,11 @@ trait Stream[+A] {
 
   def filter(f: A => Boolean): Stream[A] =
     foldRight(empty[A])((a, as) => if (f(a)) cons(a, as) else as)
+
+  // We can define `find` using `filter`. This method stops iteration
+  // when the first matching element is found.
+  def find(p: A => Boolean): A =
+    filter(p).headOption
 
   def append[AA >: A](that: Stream[AA]): Stream[AA] =
     foldRight(that)((a, s) => cons(a, s))
