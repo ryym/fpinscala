@@ -21,6 +21,34 @@ class StreamTest extends FunSuite with Matchers {
     fibs.drop(2).take(2).toList should equal (List(1, 2))
   }
 
+  type MapMethod[A, B] = Stream[A] => (A => B) => Stream[B]
+  def testMap(map: MapMethod[Int, String]): Unit = {
+    val st = c(0, c(1, c(2, emp)))
+    val st2 = map(st)(_.toString)
+    st2.toList should equal (List("0", "1", "2"))
+  }
+
+  type TakeMethod[A] = (Stream[A], Int) => Stream[A]
+  def testTake(take: TakeMethod[Int]): Unit = {
+    var i = 0
+    def incl: Int = { i += 1; i }
+    val st = c(incl, c(incl, c(incl, emp)))
+
+    take(st, 2).toList should equal (List(1, 2))
+    i should equal (2)
+  }
+
+  type TakeWhileMethod[A] = Stream[A] => (A => Boolean) => Stream[A]
+  def testTakeWhile(takeWhile: TakeWhileMethod[Int]): Unit = {
+    var i = 0
+    def incl(n: Int)(): Int = { i += 1; n }
+    val st = c(incl(0), c(incl(2), c(incl(3), c(incl(4), emp))))
+
+    takeWhile(st)(_ % 2 == 0).toList should equal (List(0, 2))
+    i should equal (3)
+    takeWhile(st)(_ >= 0).toList should equal (List(0, 2, 3, 4))
+  }
+
   test("toList evaluates all elements and map to list") {
     var i = 0
     def incl: Int = { i += 1; 1 }
@@ -32,12 +60,7 @@ class StreamTest extends FunSuite with Matchers {
   }
 
   test("take takes first nth elements") {
-    var i = 0
-    def incl: Int = { i += 1; i }
-    val st = c(incl, c(incl, c(incl, emp)))
-
-    st.take(2).toList should equal (List(1, 2))
-    i should equal (2)
+    testTake((s, i) => s.take(i))
   }
 
   test("drop skips first nth elements") {
@@ -60,19 +83,11 @@ class StreamTest extends FunSuite with Matchers {
   }
 
   test("takeWhile takes elements while predicate returns true") {
-    var i = 0
-    def incl(n: Int)(): Int = { i += 1; n }
-    val st = c(incl(0), c(incl(2), c(incl(3), c(incl(4), emp))))
-
-    st.takeWhile(_ % 2 == 0).toList should equal (List(0, 2))
-    i should equal (3)
-    st.takeWhile(_ >= 0).toList should equal (List(0, 2, 3, 4))
+    testTakeWhile(s => p => s.takeWhile(p))
   }
 
   test("map maps to another stream") {
-    val st = c(0, c(1, c(2, emp)))
-    val st2 = st.map(_.toString)
-    st2.toList should equal (List("0", "1", "2"))
+    testMap(s => f => s.map(f))
   }
 
   test("filter filters some elements") {
@@ -131,5 +146,17 @@ class StreamTest extends FunSuite with Matchers {
 
   test("fibsViaUnfold creates infinite fibonacchi list") {
     testFibs(Stream.fibsViaUnfold)
+  }
+
+  test("mapViaUnfold maps to another stream") {
+    testMap(s => f => s.mapViaUnfold(f))
+  }
+
+  test("takeViaUnfold takes first nth elements") {
+    testTake((s, i) => s.takeViaUnfold(i))
+  }
+
+  test("takeWhileViaUnfold takes elements while predicate returns true") {
+    testTakeWhile(s => p => s.takeWhileViaUnfold(p))
   }
 }

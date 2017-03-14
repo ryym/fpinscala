@@ -82,6 +82,26 @@ trait Stream[+A] {
   def flatMap[B](f: A => Stream[B]): Stream[B] =
     foldRight(empty[B])((a, b) => f(a) append b)
 
+  def mapViaUnfold[B](f: A => B): Stream[B] =
+    unfold(this)(s => s match {
+      case Cons(h, t) => Some((f(h())), t())
+      case Empty => None
+    })
+
+  def takeViaUnfold(n: Int): Stream[A] =
+    unfold((this, n)) {
+      case (s, i) => s match {
+        case Cons(h, t) if i > 0 => Some((h(), (t(), i - 1)))
+        case _ => None
+      }
+    }
+
+  def takeWhileViaUnfold(p: A => Boolean): Stream[A] =
+    unfold(this)(s => s match {
+      case Cons(h, t) if p(h()) => Some(h(), t())
+      case _ => None
+    })
+
   def startsWith[B](s: Stream[B]): Boolean = ???
 }
 case object Empty extends Stream[Nothing]
