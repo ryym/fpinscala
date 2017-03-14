@@ -83,19 +83,53 @@ class StreamTest extends FunSuite with Matchers {
     st.flatMap(double).toList should equal (List(0, 0, 1, 1, 2, 2))
   }
 
+  type ConstantMethod[A] = A => Stream[A]
+  def testConstant[A](a: A)(constant: ConstantMethod[A]): Unit = {
+    val st = constant(a)
+    st.take(4).toList should equal (List(a, a, a, a))
+    st.headOption should equal (Some(a))
+  }
+
+  def testFrom(from: Int => Stream[Int]): Unit = {
+    from(3).take(3).toList should equal (List(3, 4, 5))
+    from(-20).take(4).toList should equal (List(-20, -19, -18, -17))
+  }
+
+  def testFibs(fibs: Stream[Int]): Unit = {
+    fibs.take(7).toList should equal (List(0, 1, 1, 2, 3, 5, 8))
+    fibs.drop(2).take(2).toList should equal (List(1, 2))
+  }
+
   test("constant creates infinite stream by given value") {
-    val st = Stream.constant(true)
-    st.take(4).toList should equal (List(true, true, true, true))
-    st.headOption should equal (Some(true))
+    testConstant(8)(Stream.constant)
   }
 
   test("from creates incremental number list") {
-    Stream.from(3).take(3).toList should equal (List(3, 4, 5))
-    Stream.from(-20).take(4).toList should equal (List(-20, -19, -18, -17))
+    testFrom(Stream.from)
   }
 
   test("fibs creates infinite fibonacchi list") {
-    Stream.fibs().take(7).toList should equal (List(0, 1, 1, 2, 3, 5, 8))
-    Stream.fibs().drop(2).take(2).toList should equal (List(1, 2))
+    testFibs(Stream.fibs)
+  }
+
+  test("unfold creates stream corecursively") {
+    val st = Stream.unfold(0)(n => if (n == 5) None else Some((n, n + 1)))
+    st.toList should equal (List(0, 1, 2, 3, 4))
+  }
+
+  test("onesViaUnfold repeats 1 infinitely") {
+    Stream.onesViaUnfold.take(3).toList should equal (List(1, 1, 1))
+  }
+
+  test("constantViaUnfold creates infinite stream by given value") {
+    testConstant(8)(Stream.constantViaUnfold)
+  }
+
+  test("fromViaUnfold creates incremental number list") {
+    testFrom(Stream.fromViaUnfold)
+  }
+
+  test("fibsViaUnfold creates infinite fibonacchi list") {
+    testFibs(Stream.fibsViaUnfold)
   }
 }
