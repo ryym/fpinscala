@@ -102,13 +102,13 @@ trait Stream[+A] {
       case _ => None
     })
 
-  def zipWithViaUnfold[B, C](that: Stream[B])(f: (A, B) => C): Stream[C] =
+  def zipWith[B, C](that: Stream[B])(f: (A, B) => C): Stream[C] =
     unfold((this, that))(s => s match {
       case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1(), h2()), (t1(), t2()))
       case _ => None
     })
 
-  def zipAllViaUnfold[B](that: Stream[B]): Stream[(Option[A], Option[B])] =
+  def zipAll[B](that: Stream[B]): Stream[(Option[A], Option[B])] =
     unfold((this, that))(s => s match {
       case (Cons(h1, t1), Cons(h2, t2)) => Some((Some(h1()), Some(h2())), (t1(), t2()))
       case (Cons(h1, t1), Empty) => Some((Some(h1()), None), (t1(), Empty))
@@ -118,7 +118,7 @@ trait Stream[+A] {
 
   def startsWith[B](s: Stream[B]): Boolean =
     // We can compose these steps without performance problem thanks to laziness!
-    this.zipAllViaUnfold(s).takeWhile(!_._2.isEmpty).forAll {
+    this.zipAll(s).takeWhile(!_._2.isEmpty).forAll {
       case (h1, h2) => h1 == h2
     }
 }

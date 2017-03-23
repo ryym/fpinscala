@@ -160,29 +160,29 @@ class StreamTest extends FunSuite with Matchers {
     testTakeWhile(s => p => s.takeWhileViaUnfold(p))
   }
   
-  test("zipWithViaUnfold zips two streams") {
+  test("zipWith zips two streams") {
     val st1 = c(0, c(1, c(2, emp)))
     val st2 = c(2, c(1, c(0, emp)))
 
-    st1.zipWithViaUnfold(st2)((a, b) => (a, b)).toList should equal (
+    st1.zipWith(st2)((a, b) => (a, b)).toList should equal (
       List((0, 2), (1, 1), (2, 0))
     )
 
     val longst = c(4, c(3, st2))
-    st1.zipWithViaUnfold(longst)((a, b) => (a, b)).toList should equal (
+    st1.zipWith(longst)((a, b) => (a, b)).toList should equal (
       List((0, 4), (1, 3), (2, 2))
     )
   }
 
-  test("zipAllViaUnfold zips all elements") {
+  test("zipAll zips all elements") {
     val st1 = c(0, c(1, c(2, emp)))
     val st2 = c(2, c(1, c(0, emp)))
-    st1.zipAllViaUnfold(st2).toList should equal (
+    st1.zipAll(st2).toList should equal (
       List((Some(0), Some(2)), (Some(1), Some(1)), (Some(2), Some(0)))
     )
 
     val longst = c(4, c(3, st2))
-    st1.zipAllViaUnfold(longst).toList should equal (
+    st1.zipAll(longst).toList should equal (
       List(
         (Some(0), Some(4)),
         (Some(1), Some(3)),
@@ -191,7 +191,7 @@ class StreamTest extends FunSuite with Matchers {
         (None, Some(0))
       )
     )
-    longst.zipAllViaUnfold(st1).toList should equal (
+    longst.zipAll(st1).toList should equal (
       List(
         (Some(4), Some(0)),
         (Some(3), Some(1)),
