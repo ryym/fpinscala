@@ -201,4 +201,12 @@ class StreamTest extends FunSuite with Matchers {
       )
     )
   }
+
+  test("startsWith determines stream starts with another one") {
+    val st1 = c(0, c(1, c(2, emp)))
+    val st2 = c(0, c(1, emp))
+    st1.startsWith(st2) should equal (true)
+    st1.startsWith(Empty) should equal (true)
+    st2.startsWith(st1) should equal (false)
+  }
 }
