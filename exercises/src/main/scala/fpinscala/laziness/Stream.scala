@@ -117,11 +117,10 @@ trait Stream[+A] {
     })
 
   def startsWith[B](s: Stream[B]): Boolean =
-    this.zipAllViaUnfold(s).forAll(ss => ss match {
-      case (Some(a), Some(b)) => a == b
-      case (_, None) => true
-      case _ => false
-    })
+    // We can compose these steps without performance problem thanks to laziness!
+    this.zipAllViaUnfold(s).takeWhile(!_._2.isEmpty).forAll {
+      case (h1, h2) => h1 == h2
+    }
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
