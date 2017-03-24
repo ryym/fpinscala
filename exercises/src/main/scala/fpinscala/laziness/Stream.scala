@@ -26,6 +26,11 @@ trait Stream[+A] {
     go(this)
   }
 
+  // Stream(1, 2, 3).foldRight(0)(_ + _)
+  // 1 + Stream(2, 3).foldRight(0)(_ + _)
+  // 1 + 2 + Stream(3).foldRight(0)(_ + _)
+  // 1 + 2 + 3 + Empty.foldRight(0)(_ + _)
+  // 1 + 2 + 3 + 0
   def foldRight[B](z: => B)(f: (A, => B) => B): B = // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name and may choose not to evaluate it.
     this match {
       case Cons(h,t) => f(h(), t().foldRight(z)(f)) // If `f` doesn't evaluate its second argument, the recursion never occurs.
@@ -127,6 +132,12 @@ trait Stream[+A] {
       case Empty => None
       case s => Some(s, s drop 1)
     } append Stream(empty)
+
+  def scanRight[B](z: B)(f: (A, B) => B): Stream[B] =
+    foldRight((z, Stream(z))) { case (a, (z, s)) =>
+      val z2 = f(a, z)
+      (z2, cons(z2, s))
+    }._2
 }
 
 case object Empty extends Stream[Nothing]

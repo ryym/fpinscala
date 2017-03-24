@@ -216,4 +216,9 @@ class StreamTest extends FunSuite with Matchers {
       List(List(0, 1, 2), List(1, 2), List(2), List())
     )
   }
+
+  test("scanRight creates stream of intermediate results") {
+    val st = c(1, c(2, c(3, emp)))
+    st.scanRight(0)(_ + _).toList should equal (List(6, 5, 3, 0))
+  }
 }
