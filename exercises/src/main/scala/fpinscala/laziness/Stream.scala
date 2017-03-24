@@ -133,7 +133,7 @@ trait Stream[+A] {
       case s => Some(s, s drop 1)
     } append Stream(empty)
 
-  def scanRight[B](z: B)(f: (A, B) => B): Stream[B] =
+  def scanRight[B](z: B)(f: (A, => B) => B): Stream[B] =
     foldRight((z, Stream(z))) { case (a, (z, s)) =>
       val z2 = f(a, z)
       (z2, cons(z2, s))
