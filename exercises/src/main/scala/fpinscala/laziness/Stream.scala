@@ -83,10 +83,10 @@ trait Stream[+A] {
     foldRight(empty[B])((a, b) => f(a) append b)
 
   def mapViaUnfold[B](f: A => B): Stream[B] =
-    unfold(this)(s => s match {
+    unfold(this) {
       case Cons(h, t) => Some((f(h())), t())
       case Empty => None
-    })
+    }
 
   def takeViaUnfold(n: Int): Stream[A] =
     unfold((this, n)) {
@@ -97,10 +97,10 @@ trait Stream[+A] {
     }
 
   def takeWhileViaUnfold(p: A => Boolean): Stream[A] =
-    unfold(this)(s => s match {
+    unfold(this) {
       case Cons(h, t) if p(h()) => Some(h(), t())
       case _ => None
-    })
+    }
 
   def zipWith[B, C](that: Stream[B])(f: (A, B) => C): Stream[C] =
     unfold((this, that))(s => s match {
@@ -109,12 +109,12 @@ trait Stream[+A] {
     })
 
   def zipAll[B](that: Stream[B]): Stream[(Option[A], Option[B])] =
-    unfold((this, that))(s => s match {
+    unfold((this, that)) {
       case (Cons(h1, t1), Cons(h2, t2)) => Some((Some(h1()), Some(h2())), (t1(), t2()))
       case (Cons(h1, t1), Empty) => Some((Some(h1()), None), (t1(), Empty))
       case (Empty, Cons(h2, t2)) => Some((None, Some(h2())), (Empty, t2()))
       case _ => None
-    })
+    }
 
   def startsWith[B](s: Stream[B]): Boolean =
     // We can compose these steps without performance problem thanks to laziness!
