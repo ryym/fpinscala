@@ -209,4 +209,11 @@ class StreamTest extends FunSuite with Matchers {
     st1.startsWith(Empty) should equal (true)
     st2.startsWith(st1) should equal (false)
   }
+
+  test("tails returns") {
+    val st = c(0, c(1, c(2, emp)))
+    st.tails.toList.map(_.toList) should equal (
+      List(List(1, 2), List(2), List())
+    )
+  }
 }
