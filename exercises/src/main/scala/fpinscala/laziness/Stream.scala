@@ -123,10 +123,10 @@ trait Stream[+A] {
     }
 
   def tails: Stream[Stream[A]] =
-    unfold(this)(s => s match {
-      case (Cons(h, t)) => Some(t(), t())
-      case _ => None
-    })
+    unfold(this) {
+      case Empty => None
+      case s => Some(s, s drop 1)
+    } append Stream(empty)
 }
 
 case object Empty extends Stream[Nothing]

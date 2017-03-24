@@ -213,7 +213,7 @@ class StreamTest extends FunSuite with Matchers {
   test("tails returns") {
     val st = c(0, c(1, c(2, emp)))
     st.tails.toList.map(_.toList) should equal (
-      List(List(1, 2), List(2), List())
+      List(List(0, 1, 2), List(1, 2), List(2), List())
     )
   }
 }
