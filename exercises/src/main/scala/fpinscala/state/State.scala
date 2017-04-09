@@ -86,13 +86,9 @@ object RNG {
     }
 
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
-    rng => {
-      fs.foldRight(Nil:List[A], rng)((ra, acc) => {
-        val (as, r1) = acc
-        val (a, r2) = ra(r1)
-        (a :: as, r2)
-      })
-    }
+    // The accumulator is a function (Rand[List[A]]).
+    // foldRight(rand: Rand[List[A]])((Rand[A], Rand[List[A]]): Rand[List[A]])
+    fs.foldRight(unit(Nil:List[A]))((f, acc) => map2(f, acc)(_ :: _))
 
   def flatMap[A,B](f: Rand[A])(g: A => Rand[B]): Rand[B] = ???
 }
