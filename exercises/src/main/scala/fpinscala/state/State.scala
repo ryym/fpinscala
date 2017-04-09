@@ -21,6 +21,7 @@ object RNG {
 
   val int: Rand[Int] = _.nextInt
 
+  // Return a Rand which always returns `a`.
   def unit[A](a: A): Rand[A] =
     rng => (a, rng)
 
@@ -35,10 +36,16 @@ object RNG {
     (if (int < 0) -(int + 1) else int, nextRng)
   }
 
+  // Generate a random even number.
+  def nonNegativeEven: Rand[Int] =
+    map(nonNegativeInt)(i => i - i % 2)
+
   def double(rng: RNG): (Double, RNG) = {
     val (i, r) = nonNegativeInt(rng)
     (i / (Int.MaxValue.toDouble + 1), r)
   }
+  def double2: Rand[Double] =
+    map(nonNegativeInt)(_ / (Int.MaxValue.toDouble + 1))
 
   def intDouble(rng: RNG): ((Int,Double), RNG) = {
     val (i, r1) = nonNegativeInt(rng)
