@@ -12,4 +12,8 @@ class RNGTest extends FunSuite with Matchers {
     RNG.nonNegativeInt(FakeRNG(Int.MaxValue))._1 should equal (Int.MaxValue)
     RNG.nonNegativeInt(FakeRNG(Int.MinValue))._1 should equal (Int.MaxValue)
   }
+
+  test("ints generates random int list") {
+    RNG.ints(3)(FakeRNG(5))._1 should equal (List(5, 5, 5))
+  }
 }
