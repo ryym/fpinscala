@@ -16,4 +16,11 @@ class RNGTest extends FunSuite with Matchers {
   test("ints generates random int list") {
     RNG.ints(3)(FakeRNG(5))._1 should equal (List(5, 5, 5))
   }
+
+  test("map2 maps two Rand") {
+    RNG.map2[Int, Int, Int](
+      _ => (5, FakeRNG(0)),
+      _ => (8, FakeRNG(0))
+    )(_ * _)(FakeRNG(0))._1 should equal (40)
+  }
 }
