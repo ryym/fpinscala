@@ -34,4 +34,8 @@ class RNGTest extends FunSuite with Matchers {
   test("ints2 generates random int list") {
     ints2(3)(FakeRNG(5))._1 should equal (List(5, 5, 5))
   }
+
+  test("flatMap maps function which returns Rand") {
+    flatMap(unit(3))(n => unit(n * 5))(FakeRNG(0))._1 should equal (15)
+  }
 }
