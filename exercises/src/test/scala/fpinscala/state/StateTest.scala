@@ -18,4 +18,15 @@ class StateTest extends FunSuite with Matchers {
     def len(xs: List[_]): State[String, Int] = State(s => (xs.length, s))
     state.flatMap(len).run("") should equal (3, "")
   }
+
+  test("sequence maps list of state to state with result list") {
+    val states = List(1, 2, 3, 4).map(n => {
+      State[List[Int], Int](ns => (n, (n * 10) :: ns))
+    })
+
+    State.sequence(states).run(List(0)) should equal (
+      List(1, 2, 3, 4),
+      List(40, 30, 20, 10, 0)
+    )
+  }
 }
