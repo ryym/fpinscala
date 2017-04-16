@@ -124,6 +124,22 @@ case class State[S,+A](run: S => (A, S)) {
       val (a, nextS) = run(s)
       f(a).run(nextS)
     })
+
+  def get: State[S, S] = State(s => (s, s))
+  def set(s: S): State[S, Unit] = State(_ => ((), s))
+
+  // This method uses the `for` expression
+  // to make code readable. What this method does
+  // is exactly same as the `_modify` method below.
+  def modify(f: S => S): State[S, Unit] = for {
+    s <- get
+    _ <- set(f(s))
+  } yield ()
+
+  def _modify(f: S => S): State[S, Unit] =
+    get.flatMap { s =>
+      set(f(s)).map(_ => ())
+    }
 }
 
 sealed trait Input
