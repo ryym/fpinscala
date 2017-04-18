@@ -1,5 +1,5 @@
 import org.scalatest._
-import fpinscala.state.{State}
+import fpinscala.state._
 
 class StateTest extends FunSuite with Matchers {
   test("map maps value without changing state") {
@@ -28,5 +28,11 @@ class StateTest extends FunSuite with Matchers {
       List(1, 2, 3, 4),
       List(40, 30, 20, 10, 0)
     )
+  }
+
+  test("simulateMachine") {
+    var inputs = List(Coin, Turn, Coin, Turn, Coin, Turn, Coin, Turn)
+    val result = State.simulateMachine(inputs).run(Machine.init(5, 10))
+    result should equal ((14, 1), Machine(true, 1, 14))
   }
 }

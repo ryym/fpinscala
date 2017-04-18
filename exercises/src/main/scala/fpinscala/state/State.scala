@@ -146,7 +146,28 @@ sealed trait Input
 case object Coin extends Input
 case object Turn extends Input
 
-case class Machine(locked: Boolean, candies: Int, coins: Int)
+case class Machine(locked: Boolean, candies: Int, coins: Int) {
+  def handle(input: Input): Machine = input match {
+    case Coin => putCoin
+    case Turn => getSnack
+  }
+
+  def putCoin: Machine =
+    if (locked && candies > 0)
+      Machine(false, candies, coins + 1)
+    else
+      this
+
+  def getSnack: Machine =
+    if (!locked && candies > 0)
+      Machine(true, candies - 1, coins)
+    else
+      this
+}
+object Machine {
+  def init(candies: Int = 0, coins: Int = 0): Machine =
+    Machine(true, candies, coins)
+}
 
 object State {
   def unit[S, A](a: A): State[S, A] = State(s => (a, s))
@@ -155,5 +176,14 @@ object State {
     ss.foldRight(unit[S, List[A]](Nil))((s, accS) => s.map2(accS)(_ :: _))
 
   type Rand[A] = State[RNG, A]
-  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = ???
+
+  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = {
+    val states = inputs.map(in => {
+      State[Machine, (Int, Int)](m => {
+        val m2 = m.handle(in)
+        ((m2.coins, m2.candies), m2)
+      })
+    })
+    sequence(states).map(_.reverse.head)
+  }
 }
