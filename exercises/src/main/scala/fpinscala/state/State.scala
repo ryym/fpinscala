@@ -148,9 +148,19 @@ case class Machine(locked: Boolean, candies: Int, coins: Int) {
     else
       this
 }
+
 object Machine {
+  import StateUtil._
+
   def init(candies: Int = 0, coins: Int = 0): Machine =
     Machine(true, candies, coins)
+
+  def update = (in: Input) => (m: Machine) => m.handle(in)
+
+  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = for {
+    _ <- State.sequence(inputs map (modify[Machine] _ compose update)) // State[S, Unit]
+    s <- get // State[S, Machine]
+  } yield (s.coins, s.candies) // State[S, (Int, Int)]
 }
 
 object State {
@@ -160,16 +170,6 @@ object State {
     ss.foldRight(unit[S, List[A]](Nil))((s, accS) => s.map2(accS)(_ :: _))
 
   type Rand[A] = State[RNG, A]
-
-  def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = {
-    val states = inputs.map(in => {
-      State[Machine, (Int, Int)](m => {
-        val m2 = m.handle(in)
-        ((m2.coins, m2.candies), m2)
-      })
-    })
-    sequence(states).map(_.reverse.head)
-  }
 }
 
 object StateUtil {

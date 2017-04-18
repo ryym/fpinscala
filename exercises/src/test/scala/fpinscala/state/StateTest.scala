@@ -32,7 +32,7 @@ class StateTest extends FunSuite with Matchers {
 
   test("simulateMachine") {
     var inputs = List(Coin, Turn, Coin, Turn, Coin, Turn, Coin, Turn)
-    val result = State.simulateMachine(inputs).run(Machine.init(5, 10))
+    val result = Machine.simulateMachine(inputs).run(Machine.init(5, 10))
     result should equal ((14, 1), Machine(true, 1, 14))
   }
 }
