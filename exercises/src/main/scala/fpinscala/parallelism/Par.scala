@@ -89,8 +89,8 @@ object Par {
   }
 
   def parFilter[A](as: List[A])(f: A => Boolean): Par[List[A]] = {
-    val p = parMap(as)(a => if (f(a)) Some(a) else None)
-    map(p)(opts => opts.filter(_.isDefined).map(_.get))
+    val p = parMap(as)(a => if (f(a)) List(a) else Nil)
+    map(p)(_.flatten)
   }
 
   def equal[A](e: ExecutorService)(p: Par[A], p2: Par[A]): Boolean =
