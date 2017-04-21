@@ -88,6 +88,11 @@ object Par {
     sequence(fbs)
   }
 
+  def parFilter[A](as: List[A])(f: A => Boolean): Par[List[A]] = {
+    val p = parMap(as)(a => if (f(a)) Some(a) else None)
+    map(p)(opts => opts.filter(_.isDefined).map(_.get))
+  }
+
   def equal[A](e: ExecutorService)(p: Par[A], p2: Par[A]): Boolean =
     p(e).get == p2(e).get
 
