@@ -93,6 +93,23 @@ object Par {
     map(p)(_.flatten)
   }
 
+  // XXX: If an user specifies an executor service with small thread pool
+  // when running this, it may stop while running because this task
+  // may call the fork many times.
+  def parBisect[A](as: IndexedSeq[A])(init: A)(f: (A, A) => A): Par[A] = {
+    if (as.size <= 1) {
+      Par.unit(as.headOption getOrElse init)
+    } else {
+      val (l, r) = as.splitAt(as.length / 2)
+      val lf = Par.fork(parBisect(l)(init)(f))
+      val rf = Par.fork(parBisect(r)(init)(f))
+      Par.map2(lf, rf)(f)
+    }
+  }
+
+  def parSum(as: IndexedSeq[Int]): Par[Int] =
+    parBisect(as)(0)(_ + _)
+
   def equal[A](e: ExecutorService)(p: Par[A], p2: Par[A]): Boolean =
     p(e).get == p2(e).get
 
