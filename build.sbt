@@ -23,3 +23,5 @@ lazy val answers = (project in file("answers"))
   .settings(
     name := "answers"
   )
+
+cancelable in Global := true
