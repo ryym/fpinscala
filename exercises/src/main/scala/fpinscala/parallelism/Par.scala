@@ -127,6 +127,11 @@ object Par {
   def choiceViaChoiceN[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
     choiceN(map(cond)(b => if (b) 0 else 1))(List(t, f))
 
+  def chooser[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] =
+    es => {
+      val k = run(es)(pa).get
+      run(es)(choices(k))
+    }
 
   /* Gives us infix syntax for `Par`. */
   implicit def toParOps[A](p: Par[A]): ParOps[A] = new ParOps(p)
