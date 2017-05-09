@@ -14,7 +14,12 @@ shell, which you can fill in and modify while working through the chapter.
 */
 
 trait Prop {
+  def check: Boolean
+  def &&(p: Prop): Prop = {
+    UnitProp(check && p.check)
+  }
 }
+case class UnitProp(val check: Boolean) extends Prop
 
 object Prop {
   def forAll[A](gen: Gen[A])(f: A => Boolean): Prop = ???
@@ -27,6 +32,8 @@ object Gen {
 trait Gen[A] {
   def map[A,B](f: A => B): Gen[B] = ???
   def flatMap[A,B](f: A => Gen[B]): Gen[B] = ???
+
+  def listOf[A](ga: Gen[A]): Gen[List[A]] = ???
 }
 
 trait SGen[+A] {
